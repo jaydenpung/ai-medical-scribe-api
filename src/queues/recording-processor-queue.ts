@@ -16,6 +16,7 @@ const consultService = new ConsultService();
 export const QueuePayloadSchema = z.object({
   uploadedAudioUrl: z.string(),
   consultId: z.string(),
+  sequence: z.coerce.number(),
 });
 export type QueuePayload = z.infer<typeof QueuePayloadSchema>;
 
@@ -60,6 +61,7 @@ async function consumeFromQueue(): Promise<void> {
           transcribedText,
           consult,
           status: RecordingStatus.TRANSCRIBE_FINISHED,
+          sequence: payload.sequence,
         });
         console.log("Recording saved");
 

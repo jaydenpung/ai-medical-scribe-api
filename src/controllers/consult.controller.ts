@@ -51,6 +51,7 @@ export class ConsultController extends BaseController<Consult> {
         JSON.stringify({
           uploadedAudioUrl,
           consultId: consult.id,
+          sequence: req.body.sequence,
         })
       );
 
