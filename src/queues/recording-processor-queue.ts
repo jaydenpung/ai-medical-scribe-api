@@ -97,6 +97,7 @@ async function consumeFromQueue(): Promise<void> {
             result: consultationNote,
             status: ConsultStatus.PROCESSING_COMPLETED,
           });
+          //TODO: possible to convert this part to just update status to READY_FOR_PROCESSING. Then another endpoint to stream result of chat completion
         }
       }
     } catch (error) {

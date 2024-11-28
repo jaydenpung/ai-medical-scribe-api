@@ -25,10 +25,11 @@ export class ConsultController extends BaseController<Consult> {
         return;
       }
 
-      // set if consult finished recording
-      if (req.body.isLastRecording) {
+      // if there is notes, it means the recording is finished
+      if (req.body.notes) {
         await this.service.update(consult.id, {
           status: ConsultStatus.RECORDING_FINISHED,
+          notes: req.body.notes,
         });
       }
 
@@ -44,6 +45,23 @@ export class ConsultController extends BaseController<Consult> {
       );
 
       res.status(201).json({});
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // a long polling endpoint to get the result of the consult
+  getResult: RequestHandler = async (req, res, next): Promise<void> => {
+    try {
+      const interval = setInterval(async () => {
+        const consult = await this.service.findOne(req.params.id);
+        if (consult?.status === ConsultStatus.PROCESSING_COMPLETED) {
+          clearInterval(interval);
+          res.status(200).json(consult);
+        }
+
+        // TODO: delete consult and recordings?
+      }, 2000); // Check every 2 second
     } catch (error) {
       next(error);
     }
