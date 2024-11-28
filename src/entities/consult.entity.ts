@@ -11,6 +11,9 @@ export class Consult extends BaseEntity {
   @Column()
   notes: string;
 
+  @Column({nullable: true})
+  result: string;
+
   @OneToMany(() => Recording, recording => recording.consult)
   recordings: Recording[];
 }

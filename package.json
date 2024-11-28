@@ -12,15 +12,22 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "amqplib": "^0.10.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "form-data": "^4.0.1",
+    "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.4",
+    "openai": "^4.73.1",
     "reflect-metadata": "^0.2.2",
     "typedi": "^0.10.0",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.5",
     "@types/express": "^5.0.0",
+    "@types/multer": "^1.4.12",
     "@types/node": "^22.10.0",
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",

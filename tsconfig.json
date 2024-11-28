@@ -8,8 +8,8 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
   },
-  "include": ["src"],
+  "include": ["src", "src/mock"],
   "exclude": ["node_modules"]
 }
