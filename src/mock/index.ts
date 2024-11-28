@@ -3,36 +3,33 @@ import path from "path";
 
 export const mockAudio = fs.createReadStream(path.join(__dirname, "audio.wav"));
 
-export const mockGetFileFromS3 = (url: string): Promise<ReadStream> => {
-  // download from s3 into memory or temporary file then return the audio
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockAudio);
-    }, 1000);
-  });
+// pretend to download from s3 into memory or temporary file then return the audio
+export const mockGetFileFromS3 = (url: string): ReadStream => {
+  return fs.createReadStream(url);
 };
 
-export const mockPutFileToS3 = (audio: any): Promise<string> => {
-  // upload to s3
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve("MOCK_S3_URL");
-    }, 1000);
-  });
+// pretend to upload to s3 but is just storing in temporary path
+export const mockPutFileToS3 = async (
+  consultId: string,
+  audio: Buffer
+): Promise<string> => {
+  const tempDir = path.join(__dirname, "temp");
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+  }
+
+  const tempFilePath = path.join(tempDir, consultId + ".webm");
+  await fs.writeFileSync(tempFilePath, audio);
+  return tempFilePath;
 };
 
-export const mockAiTranscribe = (): Promise<string> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve("This is mock transcribed text");
-    }, 3000);
-  });
-};
+// pretend to delete from s3 but is just deleting from temporary path
+export const mockDeleteS3File = async (consultId: string): Promise<void> => {
+  const tempDir = path.join(__dirname, "temp");
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+  }
 
-export const mockAiCompletion = (): Promise<string> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve("This is mock chat completion");
-    }, 3000);
-  });
+  const tempFilePath = path.join(tempDir, consultId + ".webm");
+  await fs.unlinkSync(tempFilePath);
 };

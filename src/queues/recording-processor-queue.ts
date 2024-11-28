@@ -1,6 +1,6 @@
 import amqp from "amqplib";
 import { z } from "zod";
-import { mockAiCompletion, mockAiTranscribe, mockGetFileFromS3 } from "../mock";
+import { mockGetFileFromS3 } from "../mock";
 import { AiService } from "../services/ai.service";
 import { RecordingService } from "../services/recording.service";
 import { ConsultService } from "../services/consult.service";
@@ -53,8 +53,7 @@ async function consumeFromQueue(): Promise<void> {
         const audio = await mockGetFileFromS3(payload.uploadedAudioUrl);
 
         // transcribe the audio
-        // let transcribedText = await aiService.transcribe(audio);
-        let transcribedText = await mockAiTranscribe();
+        const transcribedText = await aiService.transcribe(audio);
 
         // save the recording
         const addedRecording = await recordingService.create({
@@ -75,23 +74,25 @@ async function consumeFromQueue(): Promise<void> {
           allRecordingsTranscribed
         ) {
           console.log("All recordings transcribed, updating consult status");
-          // const consultationNote = await aiService.chatCompletion([
-          //   {
-          //     role: "system",
-          //     content:
-          //       "You are a consultation note-taking application. User will provide notes, followed by conversation. Generate a consultation note based on the conversation, and notes",
-          //   },
-          //   {
-          //     role: "user",
-          //     content: `
-          //       Notes: ${consult.notes}
-          //       Conversation: ${[...consult.recordings, addedRecording]
-          //         .map((recording) => recording.transcribedText)
-          //         .join(" ")}
-          //       `,
-          //   },
-          // ]);
-          const consultationNote = await mockAiCompletion();
+          const consultationNote = await aiService.chatCompletion([
+            {
+              role: "system",
+              content:
+                "You are a consultation note-taking application. User will provide notes, followed by conversation. Generate a consultation note based on the conversation, and notes",
+            },
+            {
+              role: "user",
+              content: `
+                Notes: ${consult.notes}
+                Conversation: ${[
+                  ...consult.recordings.sort((a, b) => a.sequence - b.sequence),
+                  addedRecording,
+                ]
+                  .map((recording) => recording.transcribedText)
+                  .join(" ")}
+                `,
+            },
+          ]);
           // update consult status
           await consultService.update(consult.id, {
             result: consultationNote,
