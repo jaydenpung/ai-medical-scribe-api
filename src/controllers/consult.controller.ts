@@ -43,6 +43,7 @@ export class ConsultController extends BaseController<Consult> {
       // mock uploaded to S3
       const uploadedAudioUrl = await mockPutFileToS3(
         consult.id,
+        req.body.sequence,
         req.file?.buffer
       );
 
@@ -71,7 +72,11 @@ export class ConsultController extends BaseController<Consult> {
           res.status(200).json(consult);
 
           // delete consult and recordings
-          mockDeleteS3File(consult.id);
+          await Promise.all(
+            consult.recordings.map((recording) =>
+              mockDeleteS3File(consult.id, recording.sequence)
+            )
+          );
           await this.service.delete(consult.id);
         }
       }, 2000); // Check every 2 second

@@ -11,6 +11,7 @@ export const mockGetFileFromS3 = (url: string): ReadStream => {
 // pretend to upload to s3 but is just storing in temporary path
 export const mockPutFileToS3 = async (
   consultId: string,
+  sequence: number,
   audio: Buffer
 ): Promise<string> => {
   const tempDir = path.join(__dirname, "temp");
@@ -18,18 +19,21 @@ export const mockPutFileToS3 = async (
     fs.mkdirSync(tempDir);
   }
 
-  const tempFilePath = path.join(tempDir, consultId + ".webm");
+  const tempFilePath = path.join(tempDir, consultId + "-" + sequence + ".webm");
   await fs.writeFileSync(tempFilePath, audio);
   return tempFilePath;
 };
 
 // pretend to delete from s3 but is just deleting from temporary path
-export const mockDeleteS3File = async (consultId: string): Promise<void> => {
+export const mockDeleteS3File = async (
+  consultId: string,
+  sequence: number
+): Promise<void> => {
   const tempDir = path.join(__dirname, "temp");
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir);
   }
 
-  const tempFilePath = path.join(tempDir, consultId + ".webm");
+  const tempFilePath = path.join(tempDir, consultId + "-" + sequence + ".webm");
   await fs.unlinkSync(tempFilePath);
 };
