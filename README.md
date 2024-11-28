@@ -8,7 +8,7 @@ docker run --name lyrebird-mysql -e MYSQL_ROOT_PASSWORD=lyrebirdrocks -p 3306:33
 
 3. copy `.env.sample` to `.env`. Fill in `OPENAI_API_KEY`. If no `OPENAI_API_KEY`, fill in anything random and set `MOCK_OPENAI` to true
 
-4. npm run i
+4. npm i
 
 5. npm run dev
 
